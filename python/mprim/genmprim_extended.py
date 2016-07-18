@@ -2,9 +2,10 @@
 #% /*
 #%  * Copyright (c) 2016, David Conner (Christopher Newport University)
 #%  *
-#%  * Based on genmprim_unicycle.m  Copyright (c) 2008, Maxim Likhachev
 #%  * All rights reserved.
 #%  * 
+#%  * Based on genmprim_unicycle.m  Copyright (c) 2008, Maxim Likhachev
+#%  *
 #%  * Redistribution and use in source and binary forms, with or without
 #%  * modification, are permitted provided that the following conditions are met:
 #%  * 
@@ -51,7 +52,8 @@ def matrixSize(mat, elem=None):
 
 # Get the primitive generators for the first quadrant (assume symmetric for other for quadrants)
 def getDefaultPrimitiveGenerators(args):
-    base_mprim_end_points = dict()
+
+    base_mprim_end_points = dict()  # Create a dictionary to hold the generators
 
 
     if (args['numberofprimsperangle'] != 10):
@@ -81,7 +83,7 @@ def getDefaultPrimitiveGenerators(args):
 
     # Define matrices to hold primitive data
     for ang in range(0,increments):                             #%x,y,theta,costmult 
-        base_mprim_end_points[ang] = np.zeros((numberofprimsperangle, 4))
+        base_mprim_end_points[ang] = [np.zeros((1, 4))]*numberofprimsperangle
 
     # Define the end points for each angle in the first quadrant
     #%x aligned with the heading of the robot, angles are positive counter clockwise
@@ -90,63 +92,119 @@ def getDefaultPrimitiveGenerators(args):
 
     # Aligned 0 degrees 
     # 0 theta change
-    base_mprim_end_points[0][0,:] = np.array(np.hstack(( 1.,  0.,  0., forwardcostmult)))
-    base_mprim_end_points[0][1,:] = np.array(np.hstack((10.,  0.,  0., forwardcostmult)))
-    base_mprim_end_points[0][2,:] = np.array(np.hstack(( 5.,  0.,  0., forwardcostmult)))
-    base_mprim_end_points[0][3,:] = np.array(np.hstack((-1.,  0.,  0., backwardcostmult)))
+    base_mprim_end_points[0][0][:] = np.array(np.hstack(( 1.,  0.,  0., forwardcostmult)))
+    base_mprim_end_points[0][1][:] = np.array(np.hstack((10.,  0.,  0., forwardcostmult)))
+    base_mprim_end_points[0][2][:] = np.array(np.hstack(( 5.,  0.,  0., forwardcostmult)))
+    base_mprim_end_points[0][3][:] = np.array(np.hstack((-1.,  0.,  0., backwardcostmult)))
     #%1/16 theta change
-    base_mprim_end_points[0][4,:] = np.array(np.hstack(( 6.,  1.,  1., forwardandturncostmult)))
-    base_mprim_end_points[0][5,:] = np.array(np.hstack(( 6., -1., -1., forwardandturncostmult)))
-    base_mprim_end_points[0][6,:] = np.array(np.hstack(( 9.,  1.,  1., forwardandturncostmult)))
-    base_mprim_end_points[0][7,:] = np.array(np.hstack(( 9., -1., -1., forwardandturncostmult)))
+    base_mprim_end_points[0][4][:] = np.array(np.hstack(( 6.,  1.,  1., forwardandturncostmult)))
+    base_mprim_end_points[0][5][:] = np.array(np.hstack(( 6., -1., -1., forwardandturncostmult)))
+    base_mprim_end_points[0][6][:] = np.array(np.hstack(( 9.,  1.,  1., forwardandturncostmult)))
+    base_mprim_end_points[0][7][:] = np.array(np.hstack(( 9., -1., -1., forwardandturncostmult)))
     #%turn in place
-    base_mprim_end_points[0][8,:] = np.array(np.hstack(( 0.,  0.,  1., turninplacecostmult)))
-    base_mprim_end_points[0][9,:] = np.array(np.hstack(( 0.,  0., -1., turninplacecostmult)))
+    base_mprim_end_points[0][8][:] = np.array(np.hstack(( 0.,  0.,  1., turninplacecostmult)))
+    base_mprim_end_points[0][9][:] = np.array(np.hstack(( 0.,  0., -1., turninplacecostmult)))
 
     #Aligned to 22.5 degrees on grid
     #%0 theta change     
-    base_mprim_end_points[1][0,:] = np.array(np.hstack(( 2.,  1.,  0., forwardcostmult)))
-    base_mprim_end_points[1][1,:] = np.array(np.hstack(( 8.,  4.,  0., forwardcostmult)))
-    base_mprim_end_points[1][2,:] = np.array(np.hstack(( 4.,  2.,  0., forwardcostmult)))
-    base_mprim_end_points[1][3,:] = np.array(np.hstack((-2., -1.,  0., backwardcostmult)))
+    base_mprim_end_points[1][0][:] = np.array(np.hstack(( 2.,  1.,  0., forwardcostmult)))
+    base_mprim_end_points[1][1][:] = np.array(np.hstack(( 8.,  4.,  0., forwardcostmult)))
+    base_mprim_end_points[1][2][:] = np.array(np.hstack(( 4.,  2.,  0., forwardcostmult)))
+    base_mprim_end_points[1][3][:] = np.array(np.hstack((-2., -1.,  0., backwardcostmult)))
     #%1/16 theta change
-    base_mprim_end_points[1][4,:] = np.array(np.hstack(( 5.,  4.,  1., forwardandturncostmult)))
-    base_mprim_end_points[1][5,:] = np.array(np.hstack(( 6.,  1., -1., forwardandturncostmult)))
-    base_mprim_end_points[1][6,:] = np.array(np.hstack(( 8.,  5.,  1., forwardandturncostmult)))
-    base_mprim_end_points[1][7,:] = np.array(np.hstack(( 8.,  3., -1., forwardandturncostmult)))
+    base_mprim_end_points[1][4][:] = np.array(np.hstack(( 5.,  4.,  1., forwardandturncostmult)))
+    base_mprim_end_points[1][5][:] = np.array(np.hstack(( 6.,  1., -1., forwardandturncostmult)))
+    base_mprim_end_points[1][6][:] = np.array(np.hstack(( 8.,  5.,  1., forwardandturncostmult)))
+    base_mprim_end_points[1][7][:] = np.array(np.hstack(( 8.,  3., -1., forwardandturncostmult)))
     #%turn in place
-    base_mprim_end_points[1][8,:] = np.array(np.hstack((0., 0.,  1., turninplacecostmult)))
-    base_mprim_end_points[1][9,:] = np.array(np.hstack((0., 0., -1., turninplacecostmult)))
+    base_mprim_end_points[1][8][:] = np.array(np.hstack((0., 0.,  1., turninplacecostmult)))
+    base_mprim_end_points[1][9][:] = np.array(np.hstack((0., 0., -1., turninplacecostmult)))
 
     # Aligned to 45 degrees on grid
     #%0 theta change 
-    base_mprim_end_points[2][0,:] = np.array(np.hstack(( 1.,  1.,  0., forwardcostmult)))
-    base_mprim_end_points[2][1,:] = np.array(np.hstack(( 7.,  7.,  0., forwardcostmult)))
-    base_mprim_end_points[2][2,:] = np.array(np.hstack(( 4.,  4.,  0., forwardcostmult)))
-    base_mprim_end_points[2][3,:] = np.array(np.hstack((-1., -1.,  0., backwardcostmult)))
+    base_mprim_end_points[2][0][:] = np.array(np.hstack(( 1.,  1.,  0., forwardcostmult)))
+    base_mprim_end_points[2][1][:] = np.array(np.hstack(( 7.,  7.,  0., forwardcostmult)))
+    base_mprim_end_points[2][2][:] = np.array(np.hstack(( 4.,  4.,  0., forwardcostmult)))
+    base_mprim_end_points[2][3][:] = np.array(np.hstack((-1., -1.,  0., backwardcostmult)))
     #%1/16 theta change
-    base_mprim_end_points[2][4,:] = np.array(np.hstack(( 4.,  6.,  1., forwardandturncostmult)))
-    base_mprim_end_points[2][5,:] = np.array(np.hstack(( 6.,  4., -1., forwardandturncostmult)))
-    base_mprim_end_points[2][6,:] = np.array(np.hstack(( 6.,  8.,  1., forwardandturncostmult)))
-    base_mprim_end_points[2][7,:] = np.array(np.hstack(( 8.,  6., -1., forwardandturncostmult)))
+    base_mprim_end_points[2][4][:] = np.array(np.hstack(( 4.,  6.,  1., forwardandturncostmult)))
+    base_mprim_end_points[2][5][:] = np.array(np.hstack(( 6.,  4., -1., forwardandturncostmult)))
+    base_mprim_end_points[2][6][:] = np.array(np.hstack(( 6.,  8.,  1., forwardandturncostmult)))
+    base_mprim_end_points[2][7][:] = np.array(np.hstack(( 8.,  6., -1., forwardandturncostmult)))
     #%turn in place
-    base_mprim_end_points[2][8,:] = np.array(np.hstack(( 0.,  0.,  1., turninplacecostmult)))
-    base_mprim_end_points[2][9,:] = np.array(np.hstack(( 0.,  0., -1., turninplacecostmult)))
+    base_mprim_end_points[2][8][:] = np.array(np.hstack(( 0.,  0.,  1., turninplacecostmult)))
+    base_mprim_end_points[2][9][:] = np.array(np.hstack(( 0.,  0., -1., turninplacecostmult)))
 
-    # Aligned to 67.5 degrees on grid 
+    # Aligned to 67.5 degrees on grid  (map the 22.5 values)
     for primind in range(0,numberofprimsperangle):
-        # reverse x and y, and negate angle
-        base_mprim_end_points[3][primind,0] =  base_mprim_end_points[1][primind,1]
-        base_mprim_end_points[3][primind,1] =  base_mprim_end_points[1][primind,0]
-        base_mprim_end_points[3][primind,2] = -base_mprim_end_points[1][primind,2]
-        base_mprim_end_points[3][primind,3] =  base_mprim_end_points[1][primind,3]
+        base_mprim_end_points[3][primind][0] =  base_mprim_end_points[1][primind][1] # reverse x and y
+        base_mprim_end_points[3][primind][1] =  base_mprim_end_points[1][primind][0]
+        base_mprim_end_points[3][primind][2] = -base_mprim_end_points[1][primind][2] # negate angle
+        base_mprim_end_points[3][primind][3] =  base_mprim_end_points[1][primind][3] # same cost
 
     return base_mprim_end_points
 
 # Read in the primitive generator definitions from a CSV text file
 def readPrimitiveGeneratorDefinitions(args):
-    raise Exception(" Not defined yet!")
-    base_mprim_end_points = dict()
+    import csv
+    base_mprim_end_points = dict()  # define dictionary to hold generator data
+
+    with open(args['input'], 'r') as csvfile:
+        primreader = csv.reader(csvfile)
+        initialized = False
+        for i, row in enumerate(primreader):
+            if (row == None or len(row) < 2 or row[0][0] == '#'):
+                    # This line is a comment, so ignore
+                    continue
+
+            if (not initialized):
+                if (len(row) == 2):
+                    initialized = True
+
+                    args['numberofangles'] = int(row[0])
+                    args['numberofprimsperangle'] = int(row[1])
+
+                    if (args['numberofangles']%4 != 0):
+                        print "Invalid number of angles=",args['numberofangles']," - must be divisible by 4 quadrants!"
+                        raise Exception(str("Invalid number of angles=%d - must be divisible by 4 quadrants!"%args['numberofangles']))
+
+                    # Only need to initialize first quadrant angles
+                    for ang in range(0,args['numberofangles']/4):
+                        base_mprim_end_points[ang] = [] # initialize elements of dictionary into a list
+                                       
+                else:
+                    raise Exception(str("Invalid data in %s"%args['input']))
+            else:
+                # start angle, end_x, end_y, end_angle, costmult
+                if (len(row) != 5):
+                    print "Invalid data in row ",i," <",row,">"
+                    raise Exception(str("Invalid data in %s"%args['input']))
+
+                angleind = int(row[0])
+                end_x    = float(row[1])
+                end_y    = float(row[2])
+                end_angle= float(row[3])
+                costmult = int(row[4])
+
+                if (angleind >= args['numberofangles']/4):
+                    print "Invalid angle ID=",angleind," >= ",args['numberofangles']/4," first quadrant angles!"
+                    raise Exception(" Invalid number of angles defined in this file!")
+
+                base_mprim_end_points[angleind].append(np.array(np.hstack((end_x, end_y, end_angle, costmult))))
+
+    # Check that the number of motion primitives is consistent with parameters
+    mprims_per_angle = 0
+    for angle, angle_def in base_mprim_end_points.iteritems():
+        mprim_size = len(angle_def)
+        if (mprims_per_angle > 0 and mprim_size != mprims_per_angle):
+            print "Inconsistent number of motion primitives for angle=",angle," mprims=",mprim_size
+
+        if (mprim_size > mprims_per_angle):
+            mprims_per_angle = mprim_size
+            
+    if (args['numberofprimsperangle'] != mprims_per_angle):
+        print "Number of loaded motion primitives is not consistent with parameters ",mprims_per_angle," != ",args['numberofprimsperangle']
+        args['numberofprimsperangle'] = mprims_per_angle
 
     return base_mprim_end_points
 
@@ -163,18 +221,18 @@ def getMotionPrimitiveEndpoint(angleind, primind, currentangle, primitive_genera
     # Return the rotation angle based on quadrant and the specific primitive generator
     if (quadrant == 0):
         # First quadrant 0-90
-        return (0., primitive_generator_definitions[generatorIndex][primind,:])
+        return (0., primitive_generator_definitions[generatorIndex][primind][:])
 
     elif (quadrant == 1):
         # Second quadrant 90-180
-        return (np.pi/2.0, primitive_generator_definitions[generatorIndex][primind,:])
+        return (np.pi/2.0, primitive_generator_definitions[generatorIndex][primind][:])
 
     elif (quadrant == 2):
         # Third quadrant 180-270
-        return (np.pi, primitive_generator_definitions[generatorIndex][primind,:])
+        return (np.pi, primitive_generator_definitions[generatorIndex][primind][:])
     elif (quadrant == 3):
         # Fourth quadrant 270-360
-        return (3.0*np.pi/2.0, primitive_generator_definitions[generatorIndex][primind,:])
+        return (3.0*np.pi/2.0, primitive_generator_definitions[generatorIndex][primind][:])
     else:
         raise Exception(str("Invalid quadrant =  %d"%quadrant))
 
@@ -427,7 +485,7 @@ def defineMotionPrimitivesExtended(args):
 
     if (args['input'] != ""):
         print "Load primitive generator definitions from file <",args['input'],"> ..."
-        primitive_generator_definitions = readPrimitiveGeneratorsDefinitions(args)
+        primitive_generator_definitions = readPrimitiveGeneratorDefinitions(args)
     else:
         print "Use default primitives ..."
         primitive_generator_definitions = getDefaultPrimitiveGenerators(args)
