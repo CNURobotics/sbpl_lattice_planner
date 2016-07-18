@@ -5,8 +5,8 @@ project(sbpl_lattice_planner)
 # Find dependencies
 ##############################################################################
 
-set(THIS_PACKAGE_ROS_DEPS roscpp costmap_2d nav_core pluginlib 
-  geometry_msgs nav_msgs)
+set(THIS_PACKAGE_ROS_DEPS costmap_2d geometry_msgs nav_core 
+                          nav_msgs pluginlib roscpp )
 find_package(catkin REQUIRED COMPONENTS
   ${THIS_PACKAGE_ROS_DEPS} message_generation)
 
@@ -17,7 +17,6 @@ find_library(SBPL_LIBRARY NAMES sbpl PATHS ${SBPL_LIBRARY_DIRS} NO_DEFAULT_PATH)
 set(SBPL_LIBRARIES ${SBPL_LIBRARY})
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${SBPL_INCLUDE_DIRS})
-link_directories(${catkin_LIBRARY_DIRS} ${SBPL_LIBRARY_DIRS})
 
 ##############################################################################
 # Generate messages
@@ -36,7 +35,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS ${THIS_PACKAGE_ROS_DEPS} message_runtime
-  DEPENDS SBPL
+  DEPENDS ${SBPL_INCLUDE_DIRS} ${SBPL_LIBRARY_DIRS}
 )
 
 ##############################################################################
@@ -50,9 +49,16 @@ add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
 ##############################################################################
 # Install
 ##############################################################################
+install(DIRECTORY include
+        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 
 install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+install(FILES bgp_plugin.xml
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
