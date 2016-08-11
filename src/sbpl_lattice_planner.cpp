@@ -245,8 +245,8 @@ bool SBPLLatticePlanner::makePlan(const geometry_msgs::PoseStamped& start,
 
   plan.clear();
 
-  ROS_INFO("[sbpl_lattice_planner] getting start point (%g,%g) goal point (%g,%g)",
-           start.pose.position.x, start.pose.position.y,goal.pose.position.x, goal.pose.position.y);
+  // ROS_INFO("[sbpl_lattice_planner] getting start point (%g,%g) goal point (%g,%g)",
+  //          start.pose.position.x, start.pose.position.y,goal.pose.position.x, goal.pose.position.y);
   double theta_start = 2 * atan2(start.pose.orientation.z, start.pose.orientation.w);
   double theta_goal = 2 * atan2(goal.pose.orientation.z, goal.pose.orientation.w);
 
@@ -361,10 +361,10 @@ bool SBPLLatticePlanner::makePlan(const geometry_msgs::PoseStamped& start,
   ros::Time plan_time = ros::Time::now();
 
   //create a message for the plan
-  nav_msgs::Path gui_path;
-  gui_path.poses.resize(sbpl_path.size());
-  gui_path.header.frame_id = costmap_ros_->getGlobalFrameID();
-  gui_path.header.stamp = plan_time;
+  nav_msgs::Path path_msg;
+  path_msg.poses.resize(sbpl_path.size());
+  path_msg.header.frame_id = costmap_ros_->getGlobalFrameID();
+  path_msg.header.stamp = plan_time;
   for(unsigned int i=0; i<sbpl_path.size(); i++){
     geometry_msgs::PoseStamped pose;
     pose.header.stamp = plan_time;
@@ -383,11 +383,12 @@ bool SBPLLatticePlanner::makePlan(const geometry_msgs::PoseStamped& start,
 
     plan.push_back(pose);
 
-    gui_path.poses[i].pose.position.x = plan[i].pose.position.x;
-    gui_path.poses[i].pose.position.y = plan[i].pose.position.y;
-    gui_path.poses[i].pose.position.z = plan[i].pose.position.z;
+    path_msg.poses[i] = pose;
+//    path_msg.poses[i].pose.position.x = plan[i].pose.position.x;
+//    path_msg.poses[i].pose.position.y = plan[i].pose.position.y;
+//    path_msg.poses[i].pose.position.z = plan[i].pose.position.z;
   }
-  plan_pub_.publish(gui_path);
+  plan_pub_.publish(path_msg);
   publishStats(solution_cost, sbpl_path.size(), start, goal);
 
   return true;
