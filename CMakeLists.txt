@@ -5,19 +5,15 @@ project(sbpl_lattice_planner)
 # Find dependencies
 ##############################################################################
 
-set(THIS_PACKAGE_ROS_DEPS roscpp costmap_2d nav_core pluginlib 
+set(THIS_PACKAGE_ROS_DEPS roscpp costmap_2d nav_core pluginlib tf2
   geometry_msgs nav_msgs)
 find_package(catkin REQUIRED COMPONENTS
   ${THIS_PACKAGE_ROS_DEPS} message_generation)
 
 # Find SBPL
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(SBPL REQUIRED sbpl)
-find_library(SBPL_LIBRARY NAMES sbpl PATHS ${SBPL_LIBRARY_DIRS} NO_DEFAULT_PATH)
-set(SBPL_LIBRARIES ${SBPL_LIBRARY})
+find_package(SBPL REQUIRED)
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${SBPL_INCLUDE_DIRS})
-link_directories(${catkin_LIBRARY_DIRS} ${SBPL_LIBRARY_DIRS})
 
 ##############################################################################
 # Generate messages
@@ -30,8 +26,6 @@ generate_messages(DEPENDENCIES geometry_msgs)
 # Define package
 ##############################################################################
 
-# Since sbpl is found through pkg-config, we need to manually add its
-# libraries and include directories into catkin_package
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
@@ -45,7 +39,8 @@ catkin_package(
 
 add_library(${PROJECT_NAME} src/sbpl_lattice_planner.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${SBPL_LIBRARIES})
-add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_compile_options(${PROJECT_NAME} PUBLIC "-Wno-terminate")  # suppress warning from included SBPL header
 
 ##############################################################################
 # Install
@@ -55,4 +50,22 @@ install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+  PATTERN ".svn" EXCLUDE
+)
+
+install(FILES bgp_plugin.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+install(DIRECTORY
+  launch
+  matlab
+  rviz
+  worlds
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )

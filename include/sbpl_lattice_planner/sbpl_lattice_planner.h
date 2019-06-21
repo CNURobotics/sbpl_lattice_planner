@@ -6,8 +6,9 @@
 
 using namespace std;
 
-/** ROS **/
+// ROS
 #include <ros/ros.h>
+#include <geometry_msgs/PoseStamped.h>
 
 // Costmap used for the map representation
 #include <costmap_2d/costmap_2d_ros.h>
@@ -15,7 +16,7 @@ using namespace std;
 // sbpl headers
 #include <sbpl/headers.h>
 
-//global representation
+// global representation
 #include <nav_core/base_global_planner.h>
 
 namespace sbpl_lattice_planner{
@@ -64,6 +65,8 @@ private:
                     const geometry_msgs::PoseStamped& start, 
                     const geometry_msgs::PoseStamped& goal);
 
+  unsigned char computeCircumscribedCost();
+
   bool initialized_;
 
   SBPLPlanner* planner_;
@@ -83,16 +86,17 @@ private:
 
   unsigned char lethal_obstacle_;
   unsigned char inscribed_inflated_obstacle_;
+  unsigned char circumscribed_cost_;
   unsigned char sbpl_cost_multiplier_;
 
-
+  std::string name_;
   costmap_2d::Costmap2DROS* costmap_ros_; /**< manages the cost map for us */
+  std::vector<geometry_msgs::Point> footprint_;
+  unsigned int current_env_width_;
+  unsigned int current_env_height_;
 
   ros::Publisher plan_pub_;
   ros::Publisher stats_publisher_;
-  
-  std::vector<geometry_msgs::Point> footprint_;
-
 };
 };
 
