@@ -88,12 +88,12 @@ SBPLLatticePlanner::SBPLLatticePlanner()
   : initialized_(false), costmap_ros_(NULL){
 }
 
-SBPLLatticePlanner::SBPLLatticePlanner(std::string name, costmap_2d::Costmap2DROS* costmap_ros) 
+SBPLLatticePlanner::SBPLLatticePlanner(std::string name, costmap_2d::Costmap2DROS* costmap_ros)
   : initialized_(false), costmap_ros_(NULL){
   initialize(name, costmap_ros);
 }
 
-    
+
 void SBPLLatticePlanner::initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros){
   if(!initialized_){
     ros::NodeHandle private_nh("~/"+name);
@@ -119,7 +119,7 @@ void SBPLLatticePlanner::initialize(std::string name, costmap_2d::Costmap2DROS* 
     sbpl_cost_multiplier_ = (unsigned char) (costmap_2d::INSCRIBED_INFLATED_OBSTACLE/inscribed_inflated_obstacle_ + 1);
     ROS_DEBUG("SBPL: lethal: %uz, inscribed inflated: %uz, multiplier: %uz",lethal_obstacle,inscribed_inflated_obstacle_,sbpl_cost_multiplier_);
 
-    name_ = name;
+    name_ = private_nh.getNamespace(); // Use fully qualified namespace to identify this instance
     costmap_ros_ = costmap_ros;
 
     footprint_ = costmap_ros_->getRobotFootprint();
@@ -203,14 +203,14 @@ void SBPLLatticePlanner::initialize(std::string name, costmap_2d::Costmap2DROS* 
       exit(1);
     }
 
-    ROS_INFO("[sbpl_lattice_planner] Initialized successfully");
+    ROS_INFO("[%s] Initialized successfully",name_.c_str());
     plan_pub_ = private_nh.advertise<nav_msgs::Path>("plan", 1);
     stats_publisher_ = private_nh.advertise<sbpl_lattice_planner::SBPLLatticePlannerStats>("sbpl_lattice_planner_stats", 1);
-    
+
     initialized_ = true;
   }
 }
-  
+
 //Taken from Sachin's sbpl_cart_planner
 //This rescales the costmap according to a rosparam which sets the obstacle cost
 unsigned char SBPLLatticePlanner::costMapCostToSBPLCost(unsigned char newcost){
@@ -228,8 +228,8 @@ unsigned char SBPLLatticePlanner::costMapCostToSBPLCost(unsigned char newcost){
   }
 }
 
-void SBPLLatticePlanner::publishStats(int solution_cost, int solution_size, 
-                                      const geometry_msgs::PoseStamped& start, 
+void SBPLLatticePlanner::publishStats(int solution_cost, int solution_size,
+                                      const geometry_msgs::PoseStamped& start,
                                       const geometry_msgs::PoseStamped& goal){
   // Fill up statistics and publish
   sbpl_lattice_planner::SBPLLatticePlannerStats stats;
@@ -281,17 +281,18 @@ bool SBPLLatticePlanner::makePlan(const geometry_msgs::PoseStamped& start,
   bool do_init = false;
   if (current_env_width_ != costmap_ros_->getCostmap()->getSizeInCellsX() ||
       current_env_height_ != costmap_ros_->getCostmap()->getSizeInCellsY()) {
-    ROS_INFO("Costmap dimensions have changed from (%d x %d) to (%d x %d), reinitializing sbpl_lattice_planner.",
+    ROS_INFO("Costmap dimensions have changed from (%d x %d) to (%d x %d), reinitializing %s.",
              current_env_width_, current_env_height_,
-             costmap_ros_->getCostmap()->getSizeInCellsX(), costmap_ros_->getCostmap()->getSizeInCellsY());
+             costmap_ros_->getCostmap()->getSizeInCellsX(), costmap_ros_->getCostmap()->getSizeInCellsY(),
+             name_.c_str());
     do_init = true;
   }
   else if (footprint_ != costmap_ros_->getRobotFootprint()) {
-    ROS_INFO("Robot footprint has changed, reinitializing sbpl_lattice_planner.");
+    ROS_INFO("Robot footprint has changed, reinitializing %s.",name_.c_str());
     do_init = true;
   }
   else if (circumscribed_cost_ != computeCircumscribedCost()) {
-    ROS_INFO("Cost at circumscribed radius has changed, reinitializing sbpl_lattice_planner.");
+    ROS_INFO("Cost at circumscribed radius has changed, reinitializing %s.",name_.c_str());
     do_init = true;
   }
 
@@ -306,7 +307,7 @@ bool SBPLLatticePlanner::makePlan(const geometry_msgs::PoseStamped& start,
 
   plan.clear();
 
-  ROS_INFO("[sbpl_lattice_planner] getting start point (%g,%g) goal point (%g,%g)",
+  ROS_INFO("[%s] getting start point (%g,%g) goal point (%g,%g)", name_.c_str(),
            start.pose.position.x, start.pose.position.y,goal.pose.position.x, goal.pose.position.y);
   double theta_start = 2 * atan2(start.pose.orientation.z, start.pose.orientation.w);
   double theta_goal = 2 * atan2(goal.pose.orientation.z, goal.pose.orientation.w);
@@ -334,7 +335,7 @@ bool SBPLLatticePlanner::makePlan(const geometry_msgs::PoseStamped& start,
     ROS_ERROR("SBPL encountered a fatal exception while setting the goal state");
     return false;
   }
-  
+
   int offOnCount = 0;
   int onOffCount = 0;
   int allCount = 0;
@@ -390,32 +391,32 @@ bool SBPLLatticePlanner::makePlan(const geometry_msgs::PoseStamped& start,
   planner_->set_initialsolution_eps(initial_epsilon_);
   planner_->set_search_mode(false);
 
-  ROS_DEBUG("[sbpl_lattice_planner] run planner");
+  ROS_DEBUG("[%s] run planner",name_.c_str());
   vector<int> solution_stateIDs;
   int solution_cost;
   try{
     int ret = planner_->replan(allocated_time_, &solution_stateIDs, &solution_cost);
     if(ret)
-      ROS_DEBUG("Solution is found\n");
+      ROS_DEBUG("[%s] Solution is found\n",name_.c_str());
     else{
-      ROS_INFO("Solution not found\n");
+      ROS_INFO("[%s] Solution not found\n",name_.c_str());
       publishStats(solution_cost, 0, start, goal);
       return false;
     }
   }
   catch(SBPL_Exception *e){
-    ROS_ERROR("SBPL encountered a fatal exception while planning");
+    ROS_ERROR("[%s] SBPL encountered a fatal exception while planning",name_.c_str());
     return false;
   }
 
-  ROS_DEBUG("size of solution=%d", (int)solution_stateIDs.size());
+  ROS_DEBUG("[%s] size of solution=%d", name_.c_str(), (int)solution_stateIDs.size());
 
   vector<EnvNAVXYTHETALAT3Dpt_t> sbpl_path;
   try{
     env_->ConvertStateIDPathintoXYThetaPath(&solution_stateIDs, &sbpl_path);
   }
   catch(SBPL_Exception *e){
-    ROS_ERROR("SBPL encountered a fatal exception while reconstructing the path");
+    ROS_ERROR("[%s] SBPL encountered a fatal exception while reconstructing the path",name_.c_str());
     return false;
   }
   // if the plan has zero points, add a single point to make move_base happy
@@ -427,10 +428,10 @@ bool SBPLLatticePlanner::makePlan(const geometry_msgs::PoseStamped& start,
     sbpl_path.push_back(s);
   }
 
-  ROS_DEBUG("Plan has %d points.\n", (int)sbpl_path.size());
+  ROS_DEBUG("[%s] Plan has %d points.\n",name_.c_str(), (int)sbpl_path.size());
   ros::Time plan_time = ros::Time::now();
 
-  //create a message for the plan 
+  //create a message for the plan
   nav_msgs::Path gui_path;
   gui_path.poses.resize(sbpl_path.size());
   gui_path.header.frame_id = costmap_ros_->getGlobalFrameID();
@@ -455,6 +456,7 @@ bool SBPLLatticePlanner::makePlan(const geometry_msgs::PoseStamped& start,
 
     gui_path.poses[i] = plan[i];
   }
+  ROS_INFO("[%s]  Found path with %ld nodes of cost=%d",name_.c_str(), sbpl_path.size(), solution_cost);
   plan_pub_.publish(gui_path);
   publishStats(solution_cost, sbpl_path.size(), start, goal);
 
