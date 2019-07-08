@@ -180,7 +180,7 @@ def read_primitive_generator_definitions(args):
                         print row
                         raise Exception(str("Invalid data in %s"%args['input']))
 
-                    print "Initialize primitive setup ..."
+                    #print "Initialize primitive setup ..."
                     initialized = True
 
                     args['numberofanglesperquadrant'] = int(row[0])
@@ -208,7 +208,7 @@ def read_primitive_generator_definitions(args):
                     raise Exception(str("Invalid data in %s"%args['input']))
             else:
                 # start angle, end_x, end_y, end_angle, costmult
-                #print "getAngles=",getAngles,"  getPrims=",getPrims
+                #print "getAngles=",getAngles,"  getPrims=",getPrims, " row:",row
 
                 if (getAngles):
                     # Process angle data until we see primitive flag
@@ -219,14 +219,14 @@ def read_primitive_generator_definitions(args):
                             raise Exception(str("Invalid field during get angles : %s"%row))
                         else:
                             # Switch to getting primitives
-                            print "Flag ready to load primitives"
+                            #print "Flag ready to load primitives"
                             getPrims = True
                             getAngles = False
 
                             # Validate the angles
                             if (angle_cnt != args['numberofanglesperquadrant']):
-                                print "Invalid count of initial angles !"
-                                raise Exception(str("Invalid count of initial angles ! : %s"%row))
+                                print "Invalid count of initial angles !", angle_cnt, args['numberofanglesperquadrant']
+                                raise Exception(str("Invalid count of initial angles ! %d vs. %d : %s "%(angle_cnt, args['numberofanglesperquadrant'],row)))
 
                             # Validate the angles
                             start = -0.0001
@@ -249,11 +249,12 @@ def read_primitive_generator_definitions(args):
 
 
                     else:
-                      # Getting the angle data now
+                      #print "Getting the angle data now"
                       try:
                         if len(row) == 1 or \
                             (len(row) == 2 and row[1].strip()[0] == '#'):
                             args['angles'][angle_cnt] = float(row[0]) # Just radians
+                            angle_cnt = angle_cnt + 1
 
                         elif len(row) == 2 or \
                             (len(row) == 3 and row[2].strip()[0] == '#'):
@@ -300,7 +301,7 @@ def read_primitive_generator_definitions(args):
                         raise Exception(" Invalid number of angles defined in this file!")
 
                     base_mprim_end_points[angleind].append(np.array((end_x, end_y, angle_increment, costmult)))
-                    print "  base_mprim_end_points[",angleind,"]","[",len(base_mprim_end_points[angleind])-1,"]",base_mprim_end_points[angleind][-1]
+                    #print "  base_mprim_end_points[",angleind,"]","[",len(base_mprim_end_points[angleind])-1,"]",base_mprim_end_points[angleind][-1]
                 elif (not getAngles) and (not getPrims):
                     if (row[0] == "Angles"):
                         getAngles = True
@@ -315,7 +316,7 @@ def read_primitive_generator_definitions(args):
                         print "Invalid processing for row=",row,">"
                         raise Exception(" Invalid processing for row=%s"%(row))
 
-    print "Finished reading input file!"
+    #print "Finished reading input file!"
 
     consistent = True
 
@@ -333,7 +334,7 @@ def read_primitive_generator_definitions(args):
     if (args['numberofprimsperangle'] != mprims_per_angle):
         print "Number of loaded motion primitives is not consistent with parameters ",mprims_per_angle," != ",args['numberofprimsperangle']
         args['numberofprimsperangle'] = mprims_per_angle
-        consitent = False
+        consistent = False
 
     if not consistent:
         raise Exception(" Inconsistent primitives!")

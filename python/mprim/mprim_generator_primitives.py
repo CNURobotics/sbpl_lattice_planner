@@ -151,7 +151,7 @@ def generate_arc_line_arc_primitive(prim_def_primitive,args):
         radius3 = get_max_radius_circles(local_startpt,-vc0,local_endpt, vc1,min_turning_radius_m)
         radius4 = get_max_radius_circles(local_startpt,-vc0,local_endpt,-vc1,min_turning_radius_m)
         # Use the minimum radius, but should be > min_turning
-        radius = np.max((radius1, radius2, radius3, radius4))
+        radius = np.min((radius1, radius2, radius3, radius4))
     except OSError as err:
         print "Failed to get maximum radius!"
         print("OS error: {0}".format(err))
@@ -226,13 +226,13 @@ def generate_arc_line_arc_primitive(prim_def_primitive,args):
                         intermcells_m[iind,:] = [local_startpt[0] + rad0*np.sin(dtheta),
                                                  local_startpt[1] + rad0 - rad0*np.cos(dtheta),
                                                  dtheta ]
-                        #print "arc A : ",time," ",time*vel," ",intermcells_m[iind,:]," dTheta=",dtheta," of ",at0
+                        # print "arc A : ",time," ",time*vel," ",intermcells_m[iind,:]," dTheta=",dtheta," of ",at0
                     elif (time < tl1):
                         # Eqn (2) in www.sbpl.net/node/53
                         intermcells_m[iind,:] = [pt0[0]+(time-tl0)*vel*np.cos(at0),
                                                  pt0[1]+(time-tl0)*vel*np.sin(at0),
                                                  at0 ]
-                        #print "line1: ",time," ",time*vel," ",intermcells_m[iind,:]
+                        # print "line1: ",time," ",time*vel," ",intermcells_m[iind,:]
 
                     else:
                         # Eqn (9) in www.sbpl.net/node/53
@@ -241,7 +241,7 @@ def generate_arc_line_arc_primitive(prim_def_primitive,args):
                         intermcells_m[iind,:] = [pt1[0] - rad1*np.sin(at0) + rad1*np.sin(dtheta)*np.cos(at0) + rad1*np.cos(dtheta)*np.sin(at0),
                                                  pt1[1] + rad1*np.cos(at0) + rad1*np.sin(dtheta)*np.sin(at0) - rad1*np.cos(dtheta)*np.cos(at0),
                                                  dtheta + at0 ]
-                        #print "arc B : ",time," ",time*vel," ",intermcells_m[iind,:]," dTheta=",dtheta," of ",at1
+                        # print "arc B : ",time," ",time*vel," ",intermcells_m[iind,:]," dTheta=",dtheta," of ",at1
 
                 # Rotate relative to actual starting angle
                 # Rotation matrix based on starting point heading
@@ -252,7 +252,7 @@ def generate_arc_line_arc_primitive(prim_def_primitive,args):
                     intermcells_m[iind,:3] = np.dot(intermcells_m[iind,:3],rot)
                     intermcells_m[iind,2] += startpt[2]
 
-                #print "intermcells_m=",intermcells_m
+                # print "intermcells_m=",intermcells_m
 
                 # correct
                 errorxy = np.array((endpt[0] -intermcells_m[numofsamples-1,0],
@@ -310,12 +310,13 @@ def generate_arc_line_arc_primitive(prim_def_primitive,args):
                 # Add resolution to encourage straight motions
                 travel_dist = (math.fabs(at0) + math.fabs(at1))*(math.fabs(radius) + 0.5*wheelbase) + linear + resolution
                 prim_def_primitive['actioncost'] = int(cost_conversion_factor*travel_dist + 0.5)
-                #print "   ac line arc=", prim_def_primitive['actioncost'] ,travel_dist, args['wheelbase'], radius, cost_conversion_factor
+                # print "   ac line arc=", prim_def_primitive['actioncost'] ,travel_dist, args['wheelbase'], radius, cost_conversion_factor
                 return True
 
             else:
                 pass
-                #print "Invalid vc0=",vc0," vc1=",vc1
+                # print "Invalid vc0=",vc0," vc1=",vc1
+                #print possibility
 
 
     #print "No valid tangents for arc-line-arc ..."
@@ -369,7 +370,7 @@ def generate_line_arc_primitive(prim_def_primitive,args):
         # Requires a starting point before current point
         # if a very small number, we will just presume that we can make it  and clamp to zero
 
-        #print ' The line-arc formulation from www.sbpl.net/node/53 is NOT allowed l=%.6f'%(l)
+        # print ' The line-arc formulation from www.sbpl.net/node/53 is NOT allowed l=%.6f'%(l)
         return False
 
     else:
@@ -408,9 +409,11 @@ def generate_line_arc_primitive(prim_def_primitive,args):
             print "S=\n",S
             print "l=",l
             print "radius=",radius
-            #return False
+            return False
 
         # generate samples
+        # print "angle=",angle, " startpt= ",startpt
+
         for iind in range(0, numofsamples):
             dt = float(iind+1)/(numofsamples)
             # dtheta = rv*dt + startpt(3);
@@ -419,7 +422,7 @@ def generate_line_arc_primitive(prim_def_primitive,args):
             #                         dtheta];
             if math.isnan(dt) or dt < 0.0:
                 print "Invalid time step in line-arc generator", dt, iind
-                #return False
+                return False
 
             if (dt*vel)<l:
                 # Eqn (2) in www.sbpl.net/node/53
@@ -555,10 +558,11 @@ def generate_first_quadrant_primitive(angleind,     primind,
     prim_def_primitive['actioncost']       = 10**9
 
     line_angle = np.math.atan2(endpt[1]-startpt[1], endpt[0]-startpt[0])
-    check_line_angle = np.math.fabs(np.math.sin(wrap_angle(line_angle-startpt[2]))) < 1e-3
+    line_angle = wrap_angle(line_angle-startpt[2])
+    check_line_angle = np.math.fabs(np.math.sin(line_angle)) < 0.1
 
-    #print " line_angle=",line_angle," check=",check_line_angle, " end x=",endx_c," y=",endy_c," endpose change=",baseendpose_c[2]
-    #print "    zrt=",np.logical_and(endx_c == 0., endy_c == 0.),"  same heading=",np.logical_and(check_line_angle,baseendpose_c[2] == 0.)
+    # print " line_angle=",line_angle," check=",check_line_angle, " end x=",endx_c," y=",endy_c," endpose change=",baseendpose_c[2]
+    # print "    zrt=",np.logical_and(endx_c == 0., endy_c == 0.),"  same heading=",np.logical_and(check_line_angle,baseendpose_c[2] == 0.)
     if np.logical_and(endx_c == 0., endy_c == 0.):             # turn in place or move forward along current heading has simple interpolation
         prim_def_primitive['style']            = "Zero-radius turn"
         prim_def_primitive['turning_radius']   = 0.0
@@ -575,7 +579,7 @@ def generate_first_quadrant_primitive(angleind,     primind,
         # Deliberately double counting wheel motion for zero-radius-turns to discourage slightly
         # Add the minimum resolution to the arc length to prefer straighter motions with turn than full stop
         prim_def_primitive['actioncost']       = int((math.fabs(rotation_angle)*wheelbase + resolution)*cost_conversion_factor + 0.5)
-        #print "   ac zrt=", prim_def_primitive['actioncost'] ,rotation_angle, wheelbase, cost_conversion_factor
+        # print "   ac zrt=", prim_def_primitive['actioncost'] ,rotation_angle, wheelbase, cost_conversion_factor
 
     elif np.logical_and(check_line_angle,baseendpose_c[2] == 0.):
         prim_def_primitive['style']            = "Straight"
@@ -589,11 +593,11 @@ def generate_first_quadrant_primitive(angleind,     primind,
             rotation_angle = wrap_angle(endpt[2] - startpt[2])
 
             intermcells_m[iind,2] = (startpt[2]+rotation_angle*fraction)%(2.*np.pi)
-            #print " ",iind,"  of ",numofsamples," fraction=",fraction," rotation=",rotation_angle
+            # print " ",iind,"  of ",numofsamples," fraction=",fraction," rotation=",rotation_angle
 
         # Define action cost as the maximum distance a wheel moves during motion
         prim_def_primitive['actioncost']       = int(prim_def_primitive['line length']*cost_conversion_factor + 0.5)
-        #print "   ac lin=", prim_def_primitive['actioncost'] , prim_def_primitive['line length'], wheelbase, cost_conversion_factor
+        # print "   ac lin=", prim_def_primitive['actioncost'] , prim_def_primitive['line length'], wheelbase, cost_conversion_factor
     else:
         # Use several geometric techniques to determine the motion primitives
         if (not generate_arc_based_primitives(prim_def_primitive, args)):
@@ -620,7 +624,7 @@ def get_primitive_definition(angleind, primind, currentangle, primitive_definiti
 
     # Get the references and add as necessary
     while (angleind >= len(primitive_definitions)):
-        print " Adding primitive definition for ",len(primitive_definitions), " of ",angleind," angles"
+        # print " Adding primitive definition for ",len(primitive_definitions), " of ",angleind," angles"
         primitive_definitions.append([])
 
     if (len(primitive_definitions) != angleind+1):
@@ -632,7 +636,7 @@ def get_primitive_definition(angleind, primind, currentangle, primitive_definiti
     prim_def_angle_list = primitive_definitions[angleind] # reference to angle list
 
     while (primind >= len(prim_def_angle_list)):
-        print " Adding primitive definition for ",len(prim_def_angle_list), " of ",primind," for angle ",angleind
+        # print " Adding primitive definition for ",len(prim_def_angle_list), " of ",primind," for angle ",angleind
         prim_def_angle_list.append(dict())
 
     # Store the specific motion primitive data in dictionary

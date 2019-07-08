@@ -2,6 +2,11 @@
 Changelog for package sbpl_lattice_planner
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+CHRISLab Customizations (2019-07-01)
+* Use full name space to differentiate planner instances in ROS outputs
+* Add Python scripts for generating and visualizing motion primitive files
+* New primitives define action cost and use non-uniform angles
+
 0.2.1 (2019-01-16)
 ------------------
 * Reinit on map size, footprint and costmap changes

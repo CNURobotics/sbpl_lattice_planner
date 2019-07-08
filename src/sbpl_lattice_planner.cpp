@@ -307,10 +307,17 @@ bool SBPLLatticePlanner::makePlan(const geometry_msgs::PoseStamped& start,
 
   plan.clear();
 
-  ROS_INFO("[%s] getting start point (%g,%g) goal point (%g,%g)", name_.c_str(),
-           start.pose.position.x, start.pose.position.y,goal.pose.position.x, goal.pose.position.y);
   double theta_start = 2 * atan2(start.pose.orientation.z, start.pose.orientation.w);
   double theta_goal = 2 * atan2(goal.pose.orientation.z, goal.pose.orientation.w);
+  double distance = sqrt(pow(start.pose.position.x-goal.pose.position.x, 2) + pow(start.pose.position.y-goal.pose.position.y, 2));
+  double heading = fabs(theta_goal - theta_start);
+  if (heading > M_PI) {
+    heading -= 2*M_PI;
+  }
+  ROS_INFO("[%s] setting terminal states:\n    start point (% 8.3f,% 8.3f) yaw=% 8.3f \n     goal point (% 8.3f,% 8.3f) yaw=% 8.3f\n    Euclidean distance=% 8.3f heading change=% 8.3f",
+           name_.c_str(),
+           start.pose.position.x, start.pose.position.y,theta_start,
+           goal.pose.position.x, goal.pose.position.y, theta_goal, distance,heading);
 
   try{
     int ret = env_->SetStart(start.pose.position.x - costmap_ros_->getCostmap()->getOriginX(), start.pose.position.y - costmap_ros_->getCostmap()->getOriginY(), theta_start);
