@@ -22,9 +22,12 @@ except ImportError:
     pass
 
 n_angles = 16
-ang_inc = 2*math.pi/n_angles
-resolution = 0.100#0.050
-min_radius = 0.115*0.5 # Will allow some negative motion of inside wheel
+#resolution = 0.100
+resolution = 0.050
+use_uniform_angles = False
+
+min_radius = 0.230*0.25 # Will allow some negative motion of inside wheel of Turtlebot
+
 min_turning_radius_m = min_radius
 
 grid_max = 8
@@ -35,9 +38,17 @@ gridx,gridy = np.meshgrid(gridx,gridy)
 grid = np.vstack((gridx.flatten(),gridy.flatten()))
 print(grid)
 
-# Non-uniform angles but match the grid
 
-angles = [math.atan2(y,x) for x,y in [(1,0), (2,1), (2,2), (1,2)] ]#ang_inc*i for i in range(n_angles//4)]
+if use_uniform_angles:
+    print "Using uniform angle spacing (but straight motions don't align with grid)"
+    # Use uniform angles instead of
+    ang_inc = 2*math.pi/n_angles
+    angles = [ang_inc*i for i in range(n_angles//4)]
+else:
+    # Use non-uniform angles tp match the grid
+    print "Using non-uniform angles that match the grid"
+    angles = [math.atan2(y,x) for x,y in [(1,0), (2,1), (2,2), (1,2)] ]
+
 print angles
 degrees=[angle*180.0/math.pi for angle in angles]
 print "angle (degrees)=", degrees
@@ -98,6 +109,7 @@ def validate_grid(args, angleind, primind,
                 )
         #else:
         #    print "too long line!"
+        return True
 
 full_angles =angles[:]
 for quad in [math.pi/2, math.pi, 3*math.pi/2]:
@@ -144,7 +156,7 @@ for angid in angids:
 
     for ndx in range(gs.shape[1]):
         primind+= 1
-        validate_grid(args, angid, primind, gs[0,ndx], gs[1,ndx], 0, resolution, uv, nv, 1.0)
+        validate_grid(args, angid, primind, gs[0,ndx], gs[1,ndx], 0, resolution, uv, nv, 1)
 
     print "# Reverse motion"
     gl = np.logical_and(np.logical_and(gd > -0.2, gd < 0.2), np.dot(uv,grid)< - 0.2, )
@@ -153,7 +165,13 @@ for angid in angids:
     gm = np.dot(uv,gs)
     ndx = np.argmax(gm)
     primind+= 1
-    validate_grid(args, angid, primind, gs[0,ndx], gs[1,ndx], 0, resolution, uv, nv, 5.0)
+    validate_grid(args, angid, primind, gs[0,ndx], gs[1,ndx], 0, resolution, uv, nv, 5)
+
+    print "# ZRT motion"
+    primind+= 1
+    validate_grid(args, angid, primind,0, 0, 1, resolution, None, None, 5)
+    primind+= 1
+    validate_grid(args, angid, primind,0, 0,-1, resolution, None, None, 5)
 
 
     # Handle turns relative to current direction
@@ -169,7 +187,7 @@ for angid in angids:
             for ndx in range(gs.shape[1]):
                 primind+= 1
                 #print 30*"=",primind
-                validate_grid(args, angid, primind, gs[0,ndx], gs[1,ndx], delta*direction, resolution, uv, nv, 1.)
+                validate_grid(args, angid, primind, gs[0,ndx], gs[1,ndx], delta*direction, resolution, uv, nv, 1)
 
     for direction in (1,-1):
         gl = np.logical_and(direction*gd > 0.2, np.dot(uv,grid) > 0.2)
@@ -178,4 +196,4 @@ for angid in angids:
         for ndx in range(gs.shape[1]):
             primind+= 1
             #print 30*"=",primind
-            validate_grid(args, angid, primind, gs[0,ndx], gs[1,ndx], 0, resolution, uv, nv, 1.)
+            validate_grid(args, angid, primind, gs[0,ndx], gs[1,ndx], 0, resolution, uv, nv, 4)

@@ -31,73 +31,73 @@ Angles
 #
 Primitives
 #%0 theta change
-0,  1,  0,  0, 1, #Straight 0.100 inf 0.100
-0,  5,  0,  0, 1, #Straight 0.500 inf 0.500
-0, 10,  0,  0, 1, #Straight 1.000 inf 0.800
-0, -1,  0,  0, 8, #Reverse - higher cost to encourage forward motion
-0,  0,  0,  1, 8, #Zero radius turn - high cost to encourage movement
-0,  0,  0, -1, 8, #Zero radius turn
-0,  5,  1,  1, 4, #Line-Arc 0.076  0.947 0.516
-0,  5, -1, -1, 4, #Line-Arc 0.076 -0.947 0.516
-0,  3,  1,  2, 4, #Line-Arc 0.059  0.341 0.327
-0,  3, -1, -2, 4, #Line-Arc 0.059 -0.341 0.327
-0,  2,  1,  3, 4, #Line-Arc 0.038  0.181 0.238
-0,  2, -1, -3, 4, #Line-Arc 0.038 -0.181 0.238
-0,  1,  1,  4, 4, #Line-Arc 0.000 0.100 0.157
-0,  1, -1, -4, 4, #Line-Arc 0.000 -0.100 0.157
-0,  2,  1,  0, 8, #Swerve Arc-Line-Arc 0.127 0.085 464
-0,  2, -1,  0, 8, #Swerve Arc-Line-Arc 0.127 0.085 464
+0,  1,  0,  0, 1, #Straight 0.100 inf  100
+0,  5,  0,  0, 1, #Straight 0.500 inf  500
+0, 10,  0,  0, 1, #Straight 1.000 inf 1000
+0, -1,  0,  0, 5, #Reverse  0.100 inf 100
+0,  0,  0,  1, 5, #Zero-radius turn 0.000 0.000 207
+0,  0,  0, -1, 5, #Zero-radius turn 0.000 0.000 207
+0,  5,  1,  1, 1, #Line-Arc 0.076  0.947 669
+0,  5, -1, -1, 1, #Line-Arc 0.076 -0.947 669
+0,  3,  1,  2, 1, #Line-Arc 0.059  0.341 517
+0,  3, -1, -2, 1, #Line-Arc 0.059 -0.341 517
+0,  2,  1,  3, 2, #Line-Arc 0.038  0.181 466
+0,  2, -1, -3, 2, #Line-Arc 0.038 -0.181 466
+0,  1,  1,  4, 3, #Line-Arc 0.000  0.100 438
+0,  1, -1, -4, 3, #Line-Arc 0.000 -0.100 438
+0,  2,  1,  0, 4, #Arc-Line-Arc 0.164 0.058 449
+0,  2, -1,  0, 4, #Arc-Line-Arc 0.164 0.058 449
 #--------------------
 #Aligned to 22.5 degrees on grid
-1,  2,  1,  0, 1, #Straight 0.224 inf 0.224
-1,  4,  2,  0, 1, #Straight 0.447 inf 0.447
-1,  8,  4,  0, 1, #Straight 0.894 inf 0.894
-1, -2, -1,  0, 8, #Reverse 0.224 inf 0.224
-1,  0,  0,  1, 8, #Zero radius turn - high cost to encourage movement
-1,  0,  0, -1, 8, #Zero radius turn - high cost to encourage movement
-1,  3,  2,  1, 4, #Line-Arc 0.082  0.871 0.363
-1,  3,  1, -1, 4, #Line-Arc 0.124 -0.424 0.320
-1,  1,  1,  2, 4, #Line-Arc 0.000  0.224 0.144
-1,  1,  0, -2, 4, #Line-Arc 0.000 -0.112 0.104
-1,  1,  1,  3, 4, #Line-Arc 0.062  0.081 0.151
-1,  1,  0, -3, 4, #Line-Arc 0.027 -0.065 0.109
-1,  1,  2,  4, 4, #Line-Arc 0.045  0.134 0.255
-1,  2,  0, -4, 4, #Line-Arc 0.089 -0.089 0.230
-1,  1,  1,  0, 8, #Swerve Arc-Line-Arc 0.092 0.064 332
-1,  2,  0,  0, 8, #Swerve Arc-Line-Arc 0.109 0.079 442
+1,  2,  1,  0, 1, #Straight 0.224 inf 224
+1,  4,  2,  0, 1, #Straight 0.447 inf 447
+1,  8,  4,  0, 1, #Straight 0.894 inf 894
+1, -2, -1,  0, 5, #Reverse  0.224 inf 224
+1,  0,  0,  1, 5, #Zero-radius turn 0.000 0.000 174
+1,  0,  0, -1, 5, #Zero-radius turn 0.000 0.000 207
+1,  3,  2,  1, 1, #Line-Arc 0.082  0.871 500
+1,  4,  1, -1, 1, #Line-Arc 0.024 -0.847 570
+1,  2,  2,  2, 1, #Line-Arc 0.000  0.447 462
+1,  4,  0, -2, 1, #Line-Arc 0.000 -0.447 621
+1,  3,  3,  3, 2, #Line-Arc 0.185  0.243 681
+1,  4,  0, -3, 2, #Line-Arc 0.110 -0.262 680
+1,  1,  2,  4, 3, #Line-Arc 0.045  0.134 536
+1,  3,  0, -4, 3, #Line-Arc 0.134 -0.134 626
+1,  1,  1,  0, 4, #Arc-Line-Arc 0.099 0.058 330
+1,  2,  0,  0, 4, #Arc-Line-Arc 0.139 0.058 428
 #--------------------
 # Aligned to 45 degrees on grid
-2,  1,  1,  0, 1, #Straight 0.141 inf 0.141
-2,  3,  3,  0, 1, #Straight 0.424 inf 0.424
-2,  7,  7,  0, 1, #Straight 0.990 inf 0.990
-2, -1, -1,  0, 8, #Reverse 0.141 inf 0.141
-2,  0,  0,  1, 8, #Zero radius turn - high cost to encourage movement
-2,  0,  0, -1, 8, #Zero radius turn - high cost to encourage movement
-2,  3,  4,  1, 4, #Line-Arc 0.059  1.378 0.503
-2,  4,  3, -1, 4, #Line-Arc 0.059 -1.378 0.503
-2,  1,  2,  2, 4, #Line-Arc 0.041  0.241 0.231
-2,  2,  1, -2, 4, #Line-Arc 0.041 -0.241 0.231
-2,  1,  2,  3, 4, #Line-Arc 0.114  0.103 0.243
-2,  2,  1, -3, 4, #Line-Arc 0.114 -0.103 0.243
-2,  0,  1,  4, 4, #Line-Arc 0.000  0.071 0.111
-2,  1,  0, -4, 4, #Line-Arc 0.000 -0.071 0.111
-2,  1,  2,  0, 8, #Swerve Arc-Line-Arc 0.161 0.085 411
-2,  2,  1,  0, 8, #Swerve Arc-Line-Arc 0.161 0.085 411
+2,  1,  1,  0, 1, #Straight 0.141 inf 141
+2,  3,  3,  0, 1, #Straight 0.424 inf 424
+2,  7,  7,  0, 1, #Straight 0.990 inf 990
+2, -1, -1,  0, 5, #Straight 0.141 inf 141
+2,  0,  0,  1, 5, #Zero-radius turn 0.000 0.000 174
+2,  0,  0, -1, 5, #Zero-radius turn 0.000 0.000 174
+2,  3,  4,  1, 1, #Line-Arc 0.059  1.378 640
+2,  4,  3, -1, 1, #Line-Arc 0.059 -1.378 640
+2,  2,  4,  2, 1, #Line-Arc 0.083  0.483 652
+2,  4,  2, -2, 1, #Line-Arc 0.083 -0.483 652
+2,  1,  3,  3, 2, #Line-Arc 0.087  0.207 589
+2,  3,  1, -3, 2, #Line-Arc 0.087 -0.207 589
+2,  0,  1,  4, 3, #Line-Arc 0.000  0.071 392
+2,  1,  0, -4, 3, #Line-Arc 0.000 -0.071 392
+2,  0,  2,  0, 4, #Arc-Line-Arc 0.086 0.058 570
+2,  2,  1,  0, 4, #Arc-Line-Arc 0.184 0.058 406
 #--------------------
 #Aligned to 67.5 degrees on grid
 3,  1,  2,  0, 1, #Straight 0.224 inf 0.224
 3,  2,  4,  0, 1, #Straight 0.447 inf 0.447
 3,  4,  8,  0, 1, #Straight 0.894 inf 0.894
-3, -1, -2,  0, 8, #Reverse 0.224 inf 0.224
-3,  0,  0,  1, 8, #Zero radius turn - high cost to encourage movement
-3,  0,  0, -1, 8, #Zero radius turn - high cost to encourage movement
-3,  1,  3,  1, 4, #Line-Arc 0.124  0.424 0.320
-3,  2,  3, -1, 4, #Line-Arc 0.082 -0.871 0.363
-3,  0,  1,  2, 4, #Line-Arc 0.000  0.112 0.104
-3,  1,  1, -2, 4, #Line-Arc 0.000 -0.224 0.144
-3,  0,  1,  3, 4, #Line-Arc 0.027  0.065 0.109
-3,  1,  1, -3, 4, #Line-Arc 0.062 -0.081 0.151
-3,  0,  2,  4, 4, #Line-Arc 0.089  0.089 0.230
-3,  2,  1, -4, 4, #Line-Arc 0.045 -0.134 0.255
-3,  0,  2,  0, 8, #Swerve Arc-Line-Arc 0.109 0.079 442
-3,  1,  1,  0, 8, #Swerve Arc-Line-Arc 0.092 0.064 332
+3, -1, -2,  0, 5, #Reverse 0.224 inf 0.224
+3,  0,  0,  1, 5, #Zero-radius turn 0.000 0.000 207
+3,  0,  0, -1, 5, #Zero-radius turn 0.000 0.000 174
+3,  1,  4,  1, 1, #Line-Arc 0.024  0.847 570
+3,  2,  3, -1, 1, #Line-Arc 0.082 -0.871 500
+3,  0,  4,  2, 1, #Line-Arc 0.000  0.447 621
+3,  2,  2, -2, 1, #Line-Arc 0.000 -0.447 462
+3,  0,  3,  3, 2, #Line-Arc 0.082  0.196 571
+3,  2,  2, -3, 2, #Line-Arc 0.124 -0.162 530
+3,  0,  2,  4, 3, #Line-Arc 0.089  0.089 511
+3,  2,  2, -4, 3, #Line-Arc 0.179 -0.089 600
+3,  0,  2,  0, 4, #Arc-Line-Arc 0.139 0.058 428
+3,  1,  1,  0, 4, #Arc-Line-Arc 0.099 0.058 330
